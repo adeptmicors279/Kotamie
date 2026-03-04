@@ -1,10 +1,12 @@
 from .scripts import Script
 
 class Engine:
-    def __init__(self, script):
+    def __init__(self, script, scene):
         self.script = Script(script)      # Script 对象
         self.current_index = 0    # 当前执行到第几个 Node
         self.end = False
+        self.scene = scene
+        self.path = "./assets/"
 
     def run(self):
         while self.current_index < len(self.script.nodes) and not self.end:
@@ -23,12 +25,18 @@ class Engine:
 
     def switch_scene(self, scene):
         print(f"切换场景: {scene}")
+        self.scene.create_scene(self.path + "scene" + scene)
 
     def show_char(self, char, mood, x_offset=0, y_offset=0, action=None):
         print(f"显示 {char} {mood} 在 ({x_offset},{y_offset}) 动作: {action}")
+        self.scene.create_char(
+            char_name = char,
+            char_img = self.path + "chars" + f"{char}"
+        )
 
     def show_char_withanchor(self, char, mood, position, x_offset=0, y_offset=0, action=None):
         print(f"显示 {char} {mood} 在 {position} 锚点偏移({x_offset},{y_offset}) 动作: {action}")
+        self.scene.create_char_withoutanchor()
 
     def show_choice(self, question, choice_text, command):
         print(f"选择: {question} -> {choice_text} 执行 {command}")
