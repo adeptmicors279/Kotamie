@@ -24,10 +24,10 @@ bg classroom.png
 
 
 //show
-show YukuNya Nya left
-show YukuNya happy
-show YukuNya happy at 100 100
-show YukuNya happy center offset -30 0
+show YukuNya Nya.png left
+show YukuNya happy.png
+show YukuNya happy.png at 100 100
+show YukuNya happy.png center offset -30 0
 //show+角色名称+状态+位置+动作
 //顺序不能乱
 //assets文件目录格式应该如下
@@ -36,7 +36,7 @@ show YukuNya happy center offset -30 0
 //    - Nya_xxx.png
 //    - sad_xxxx.png
 //调用时则写成show YukuNya sad_xxxx.png left  例如
-show YukuNya sad_1 left
+show YukuNya sad_1.png left
 @YukuNya: 呜呜呜T_T
 //同时，你也可以将assets文件夹建立成这样
 //assets
@@ -46,11 +46,11 @@ show YukuNya sad_1 left
 //  -happy
 //    - happy_xxxx.png
 //这种写法要求子文件夹内部的文件开头需要以父文件夹名称开头并在_后加入文件名
-show YukuNya sad_xxxx1 center
+show YukuNya sad_xxxx1.ong center
 //引擎会自动读取_之前的内容作为父文件夹的路径，并且以此文件名来寻找文件
 //两种储存结构不可混用
 //关于定位，引擎提供三个锚点供选择，你可以写偏移量或者直接改坐标
-show YukuNya happy_1 center action shake
+show YukuNya happy_1.png center action shake
 //默认只有shake这个动画
 //可以去action.py修改与添加
 

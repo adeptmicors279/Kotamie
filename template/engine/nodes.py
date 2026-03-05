@@ -53,10 +53,7 @@ class ShowNode(Node):
         self.action = action
 
     def execute(self, engine):
-        if self.anchor:
-            engine.show_char_withanchor(self.char, self.mood, self.position, self.x_offset, self.y_offset, self.action)
-        else:
-            engine.show_char(self.char, self.mood, self.x_offset, self.y_offset, self.action)
+        engine.show_char(self.char, self.mood, self.position, self.anchor, self.x_offset, self.y_offset, self.action)
 
 class EndNode(Node):
     def execute(self, engine):

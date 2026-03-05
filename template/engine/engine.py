@@ -27,16 +27,22 @@ class Engine:
         print(f"切换场景: {scene}")
         self.scene.create_scene(self.path + "scene" + scene)
 
-    def show_char(self, char, mood, x_offset=0, y_offset=0, action=None):
-        print(f"显示 {char} {mood} 在 ({x_offset},{y_offset}) 动作: {action}")
-        self.scene.create_char(
-            char_name = char,
-            char_img = self.path + "chars" + f"{char}"
-        )
 
-    def show_char_withanchor(self, char, mood, position, x_offset=0, y_offset=0, action=None):
-        print(f"显示 {char} {mood} 在 {position} 锚点偏移({x_offset},{y_offset}) 动作: {action}")
-        self.scene.create_char_withoutanchor()
+
+    def show_char(self, char, mood, position, anchor, x_offset=0, y_offset=0, action=None):
+        if anchor:
+            print(f"显示 {char} {mood} 在 {position} 锚点偏移({x_offset},{y_offset}) 动作: {action}")
+        else:
+            print(f"显示 {char} {mood} 未启用锚点 在坐标({x_offset},{y_offset}) 动作: {action}")
+        self.scene.create_char(
+            char_name=char,
+            char_img=self.path + "chars/" + f"{char}/{mood}",
+            char_pos = position,
+            anchor = anchor,
+            x_offset = x_offset,
+            y_offset = y_offset,
+            char_action = action
+        )
 
     def show_choice(self, question, choice_text, command):
         print(f"选择: {question} -> {choice_text} 执行 {command}")

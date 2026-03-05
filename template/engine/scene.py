@@ -1,4 +1,5 @@
 from .engine import Engine
+from .action import Action
 import  pygame
 import yaml
 
@@ -9,8 +10,11 @@ class Scene:
             config = yaml.safe_load(conf)
         self.resolution = (config['window']['width'], config['window']['height'])
         self.fps = config["fps"]
+        # 状态机二则
         self.is_scene = False
         self.is_game = False
+
+        self.char_action = None # 初始化char_action
         self.name = config["name"]
         self.engine = Engine("./scripts/main.ks",self)
         self.runner = self.engine.run()
@@ -31,33 +35,20 @@ class Scene:
         # 对话
         pass
 
-    def create_char(self, char_name, char_img, char_pos, x_offset, y_offset, char_action):
+    def create_char(self, char_name, char_img, char_pos, anchor, x_offset, y_offset, char_action):
         # 创建角色
-        char_img = pygame.image.load(char_img).convert_alpha()
+        self.char_img = pygame.image.load(char_img).convert_alpha()
         # 覆盖图片路径为pygame实例并放入字典便于执行
         self.characters[f"{char_name}"] = {
             "filepath": f"{char_img}",
             "position": f"{char_pos}",
+            "anchor": f"{anchor}",
             "x_offset": f"{x_offset}",
             "y_offset": f"{y_offset}",
             "action": f"{char_action}"
         }
         if char_action:
-            self.char_action(char_name, char_action)
-
-    def char_action(self, char_name, char_action):
-        # 角色动作
-        pass
-
-    def create_char_withoutanchor(self):
-        char_img = pygame.image.load(char_img).convert_alpha()
-        # 覆盖图片路径为pygame实例并放入字典便于执行
-        self.characters[f"{char_name}"] = {
-            "filepath": f"{char_img}",
-            "action": f"{char_action}"
-        }
-        if char_action:
-            self.char_action(char_name, char_action)
+            self.char_action = Action(char_name, char_action)
 
 
 
@@ -66,6 +57,17 @@ class Scene:
 
     def play_sound(self):
         pass
+
+    def draw(self):
+        # 每帧都绘制当前状态
+        self.screen.blit(self.scene, (0, 0))  # 重绘背景
+        for char in self.characters.values():  # 重绘人物
+            if char["anchor"]:
+                self.screen.blit("待定！！！") # 以锚点为基础渲染
+            else:
+                # 关闭锚点直接渲染到坐标
+                self.scene.blit()
+
 
     def run(self):
         running = True
@@ -81,17 +83,6 @@ class Scene:
                         next(self.runner)
                     except StopIteration:
                         pass
-
-            # 每帧都绘制当前状态
-            self.screen.blit(self.scene, (0, 0)) # 重绘背景
-            for char in self.characters.values(): # 重绘人物
-                self.screen.blit("待定！！！")
+            self.draw() # 绘制
             pygame.display.update()
             self.clock.tick(self.fps)
-'''if __name__ == "__main__":
-    a = Scene()
-    a.create_window()
-    a.create_scene("intro_blade.jpg")
-    a.run()
-    a.switch_scene("intro_freedom.jpg")
-'''
