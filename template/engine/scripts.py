@@ -111,6 +111,12 @@ class Script:
                 #print(char,mood,position,anchor,x_offset,y_offset,action)
                 self.nodes.append(ShowNode(char, mood, position, anchor, x_offset, y_offset, action))
 
+            elif line.startswith("hide"):
+                pass
+
+            elif line.startswith("move"):
+                pass
+
             # bg
             elif line.startswith("bg "):
                 scene = line.strip("bg ").strip()

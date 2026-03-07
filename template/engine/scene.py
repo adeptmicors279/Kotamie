@@ -8,14 +8,24 @@ class Scene:
         # 初始化参数,详见config.yml
         with open("./config.yml","r") as conf:
             config = yaml.safe_load(conf)
+        # 基本信息
         self.resolution = (config['window']['width'], config['window']['height'])
         self.fps = config["fps"]
-        # 状态机二则
-        self.is_scene = False
-        self.is_game = False
-
-        self.char_action = None # 初始化char_action
         self.name = config["name"]
+
+        # 初始化anchor坐标
+        self.left = (self.resolution[0]/5, self.resolution[1]/2)
+        self.center = (self.resolution[0]*2/5, self.resolution[1]/2)
+        self.right = (self.resolution[0]*3/5, self.resolution[1]/2)
+
+        # 初始化characters队列
+        self.characters = {}
+        # 状态机
+        self.is_scene = False # 目前不知道有没有用???
+        self.is_game = False # 检测是否在游戏内，如若是，True并且等待鼠标点击激活engine内的yield
+        self.char_action = None # 初始化char_action
+
+        # 调用engine
         self.engine = Engine("./scripts/main.ks",self)
         self.runner = self.engine.run()
 
@@ -37,19 +47,23 @@ class Scene:
 
     def create_char(self, char_name, char_img, char_pos, anchor, x_offset, y_offset, char_action):
         # 创建角色
-        self.char_img = pygame.image.load(char_img).convert_alpha()
+        char_img = pygame.image.load(char_img).convert_alpha()
+        # 覆盖char_pos的文本为坐标，使其可以直接调用
+        if char_pos == "left":
+            char_pos = self.left
+        elif char_pos == "center":
+            char_pos = self.center
+        elif char_pos == "right":
+            char_pos = self.right
         # 覆盖图片路径为pygame实例并放入字典便于执行
         self.characters[f"{char_name}"] = {
-            "filepath": f"{char_img}",
-            "position": f"{char_pos}",
-            "anchor": f"{anchor}",
-            "x_offset": f"{x_offset}",
-            "y_offset": f"{y_offset}",
-            "action": f"{char_action}"
+            "image": char_img,
+            "position": char_pos,
+            "anchor": anchor,
+            "x_offset": x_offset,
+            "y_offset": y_offset,
+            "action": char_action
         }
-        if char_action:
-            self.char_action = Action(char_name, char_action)
-
 
 
     def create_choice(self):
@@ -58,15 +72,35 @@ class Scene:
     def play_sound(self):
         pass
 
-    def draw(self):
+    def draw_scene(self):
         # 每帧都绘制当前状态
-        self.screen.blit(self.scene, (0, 0))  # 重绘背景
-        for char in self.characters.values():  # 重绘人物
-            if char["anchor"]:
-                self.screen.blit("待定！！！") # 以锚点为基础渲染
-            else:
+        # 重绘背景
+        self.screen.blit(self.scene, (0, 0))
+
+    def draw_characters(self):
+        # 重绘人物
+        for char in self.characters.values():
+            if char["anchor"] and char["action"] is None:
+                # 以锚点为基础渲染
+                self.screen.blit(
+                    char["image"],
+                    (char["x_offset"] + char["position"][0],
+                            char["y_offset"] + char["position"][1])
+                )
+            elif not char["anchor"] and char["action"] is None:
                 # 关闭锚点直接渲染到坐标
-                self.scene.blit()
+                self.screen.blit(
+                    char["image"],
+                    (char["x_offset"], char["y_offset"])
+                )
+            elif char["action"]:
+                # 使用action进行操作
+                coordinates = Action()
+
+                pass
+
+    def draw_ui(self):
+        pass
 
 
     def run(self):
@@ -83,6 +117,10 @@ class Scene:
                         next(self.runner)
                     except StopIteration:
                         pass
-            self.draw() # 绘制
+            # 绘制
+            self.draw_scene()
+            self.draw_characters()
+            # self.draw_ui()
+
             pygame.display.update()
             self.clock.tick(self.fps)
